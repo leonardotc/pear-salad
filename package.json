@@ -8,7 +8,7 @@
   "type": "module",
   "license": "Apache-2.0",
   "scripts": {
-    "dev": "pear run -d .",
+    "dev": "pear run -d . 17ddda3a69b2d1be2e1138064b7c700444e715e92c56e59c9cd8892df8c1581c",
     "lab": "node ./lab.js",
     "test": "brittle test/*.test.js"
   },

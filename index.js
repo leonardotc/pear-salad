@@ -13,7 +13,7 @@ import Hypercore from 'hypercore'
 
 const core = new Hypercore('./directory')
 
-const { teardown, config, updates } = Pear    // Import configuration options, updates and cleanup functions from Pear
+const { teardown, config } = Pear    // Import configuration options, updates and cleanup functions from Pear
 const key = config.args.pop()       // Retrieve a potential chat room key from command-line arguments
 const shouldCreateSwarm = !key      // Flag to determine if a new chat room should be created
 const swarm = new Hyperswarm()
@@ -22,9 +22,12 @@ const swarm = new Hyperswarm()
 // (This is not a requirement, but it helps avoid DHT pollution)
 teardown(() => swarm.destroy())
 
-// Enable automatic reloading for the app
-// This is optional but helpful during production
-updates(() => Pear.reload())
+// Show the previous n messages in the channel
+const readContext = async (n = 20) => {
+  for (let i = Math.max(core.length - 20, 0); i < core.length; i++) {
+    console.log((await core.get(i)).toString())
+  }
+}
 
 const rl = readline.createInterface({
   input: new tty.ReadStream(0),
@@ -74,6 +77,7 @@ async function joinChatRoom (topicStr) {
   const topicBuffer = b4a.from(topicStr, 'hex')
   await joinSwarm(topicBuffer)
   console.log(`[info] Joined chat room`)
+  await readContext()
 }
 
 async function joinSwarm (topicBuffer) {
@@ -83,12 +87,16 @@ async function joinSwarm (topicBuffer) {
 }
 
 function sendMessage (message) {
+  console.log(message)
   // Send the message to all peers (that you are connected to)
   const peers = [...swarm.connections]
+  core.append(Buffer.from(message))
   for (const peer of peers) peer.write(message)
 }
 
 function appendMessage ({ name, message }) {
   // Output chat msgs to terminal
-  console.log(`[${name}] ${message}`)
+  const msg = `[${name}] ${message}`
+  core.append(Buffer.from(msg))
+  console.log(msg)
 }

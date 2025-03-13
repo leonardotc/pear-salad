@@ -6,7 +6,7 @@ const core = new Hypercore('./directory')
 
   // get block #42
   await core.append(Buffer.from('I am a block of data'))
-  const block = await core.get(core.length)
+  const block = await core.get(core.length - 1)
   console.log(block)
   
   // simple call append with a new block of data

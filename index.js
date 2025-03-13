@@ -9,7 +9,9 @@ import crypto from 'hypercore-crypto' // Cryptographic functions for generating 
 import readline from 'bare-readline'  // Module for reading user input in terminal
 import tty from 'bare-tty'            // Module to control terminal behavior
 import process from 'bare-process'    // Process control for Bare
+import Hypercore from 'hypercore'
 
+const core = new Hypercore('./directory')
 
 const { teardown, config, updates } = Pear    // Import configuration options, updates and cleanup functions from Pear
 const key = config.args.pop()       // Retrieve a potential chat room key from command-line arguments
